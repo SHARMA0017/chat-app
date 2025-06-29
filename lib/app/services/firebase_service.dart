@@ -29,7 +29,6 @@ class FirebaseService extends GetxService {
   Stream<String> get messageStream => _messageStreamController.stream;
 
   // FCM v1 API Configuration
-  // Replace with your Firebase project ID
   static const String _projectId = 'task-4dccc';
   static const String _fcmScope = 'https://www.googleapis.com/auth/firebase.messaging';
 
@@ -51,40 +50,84 @@ class FirebaseService extends GetxService {
   }
   
   Future<void> _initializeMessaging() async {
-    // Check if Firebase Messaging is supported on this platform
-    if (Platform.isIOS) {
-      AppLogger.warning('Firebase Messaging disabled on iOS due to build issues. Using APNs instead.');
-      return;
+    try {
+      // Request permission for notifications (especially important for iOS)
+      NotificationSettings settings = await _messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+      
+      AppLogger.info('Notification permission status: ${settings.authorizationStatus}');
+      
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        AppLogger.info('User granted notification permission');
+      } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+        AppLogger.info('User granted provisional notification permission');
+      } else {
+        AppLogger.warning('User declined or has not accepted notification permission');
+        if (Platform.isIOS) {
+          AppLogger.warning('On iOS, notifications require explicit permission. Please enable in Settings.');
+        }
+      }
+      
+      // Get the device token with retry mechanism for iOS
+      await _getDeviceTokenWithRetry();
+      
+      // Update user's device token if available
+      if (_deviceToken != null && _authService.currentUser != null) {
+        await _authService.updateDeviceToken(_deviceToken!);
+      }
+      
+      // Setup message handlers
+      _setupMessageHandlers();
+      
+      // Listen to token refresh
+      _setupTokenRefreshListener();
+      
+    } catch (e) {
+      AppLogger.error('Error initializing messaging', 'FCM', e);
+      if (Platform.isIOS) {
+        AppLogger.error('iOS FCM initialization failed. Check APNs configuration.', 'FCM', e);
+      }
     }
+  }
 
-    // Request permission for notifications
-    NotificationSettings settings = await _messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-    
-    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      AppLogger.info('User granted notification permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-      AppLogger.info('User granted provisional notification permission');
-    } else {
-      AppLogger.warning('User declined or has not accepted notification permission');
+  Future<void> _getDeviceTokenWithRetry({int maxRetries = 3}) async {
+    for (int i = 0; i < maxRetries; i++) {
+      try {
+        _deviceToken = await _messaging.getToken();
+        if (_deviceToken != null) {
+          AppLogger.fcm('Device Token obtained (attempt ${i + 1}): ${_deviceToken!.substring(0, 20)}...');
+          return;
+        } else {
+          AppLogger.warning('Device token is null (attempt ${i + 1})');
+          if (Platform.isIOS) {
+            AppLogger.warning('iOS token retrieval failed. Check APNs setup and app permissions.');
+          }
+        }
+      } catch (e) {
+        AppLogger.error('Error getting device token (attempt ${i + 1})', 'FCM', e);
+      }
+      
+      if (i < maxRetries - 1) {
+        await Future.delayed(Duration(seconds: 2)); // Wait 2 seconds before retry
+      }
     }
     
-    // Get the device token
-    _deviceToken = await _messaging.getToken();
-    AppLogger.fcm('Device Token obtained: ${_deviceToken?.substring(0, 20)}...');
-    
-    // Update user's device token
-    if (_deviceToken != null && _authService.currentUser != null) {
-      await _authService.updateDeviceToken(_deviceToken!);
+    if (_deviceToken == null) {
+      AppLogger.error('Failed to get device token after $maxRetries attempts', 'FCM');
+      if (Platform.isIOS) {
+        AppLogger.error('iOS troubleshooting: 1) Check APNs key/certificate in Firebase Console, 2) Verify push notifications capability in Xcode, 3) Check app permissions', 'FCM');
+      }
     }
-    
+  }
+
+  void _setupMessageHandlers() {
     // Handle foreground messages
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
     
@@ -95,10 +138,23 @@ class FirebaseService extends GetxService {
     FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
     
     // Handle initial message if app was opened from notification
-    RemoteMessage? initialMessage = await _messaging.getInitialMessage();
-    if (initialMessage != null) {
-      _handleNotificationTap(initialMessage);
-    }
+    _messaging.getInitialMessage().then((RemoteMessage? message) {
+      if (message != null) {
+        _handleNotificationTap(message);
+      }
+    });
+  }
+
+  void _setupTokenRefreshListener() {
+    _messaging.onTokenRefresh.listen((newToken) {
+      AppLogger.info('FCM Token refreshed: ${newToken.substring(0, 20)}...');
+      _deviceToken = newToken;
+      if (_authService.currentUser != null) {
+        _authService.updateDeviceToken(newToken);
+      }
+    }, onError: (error) {
+      AppLogger.error('Error in token refresh listener', 'FCM', error);
+    });
   }
   
   Future<void> _handleForegroundMessage(RemoteMessage message) async {
@@ -291,8 +347,6 @@ class FirebaseService extends GetxService {
         print('Could not get access token. FCM not configured properly.');
         print('Message would be sent to: $senderName');
         print('Content: $messageContent');
-        // Don't show local notification as it would appear on sender's device
-        // In a real app, you might want to store the message for later delivery
         return false;
       }
 
@@ -325,6 +379,10 @@ class FirebaseService extends GetxService {
               'aps': {
                 'sound': 'default',
                 'content-available': 1,
+                'alert': {
+                  'title': senderName,
+                  'body': messageContent,
+                },
               },
             },
           },
@@ -356,47 +414,47 @@ class FirebaseService extends GetxService {
   }
   
   Future<void> subscribeToTopic(String topic) async {
-    await _messaging.subscribeToTopic(topic);
+    try {
+      await _messaging.subscribeToTopic(topic);
+      AppLogger.info('Subscribed to topic: $topic');
+    } catch (e) {
+      AppLogger.error('Error subscribing to topic: $topic', 'FCM', e);
+    }
   }
   
   Future<void> unsubscribeFromTopic(String topic) async {
-    await _messaging.unsubscribeFromTopic(topic);
+    try {
+      await _messaging.unsubscribeFromTopic(topic);
+      AppLogger.info('Unsubscribed from topic: $topic');
+    } catch (e) {
+      AppLogger.error('Error unsubscribing from topic: $topic', 'FCM', e);
+    }
   }
   
   Future<String?> getDeviceToken() async {
-    // Return null for iOS due to Firebase build issues
-    if (Platform.isIOS) {
-      AppLogger.warning('Device token not available on iOS due to Firebase build issues. Use APNs instead.');
-      return null;
+    if (_deviceToken != null) {
+      return _deviceToken;
     }
-    return await _messaging.getToken();
+    
+    // Try to get token again if not available
+    await _getDeviceTokenWithRetry();
+    return _deviceToken;
   }
   
   Future<void> refreshToken() async {
-    _deviceToken = await _messaging.getToken();
+    await _getDeviceTokenWithRetry();
     if (_deviceToken != null && _authService.currentUser != null) {
       await _authService.updateDeviceToken(_deviceToken!);
     }
-  }
-  
-  // Listen to token refresh
-  void listenToTokenRefresh() {
-    _messaging.onTokenRefresh.listen((newToken) {
-      _deviceToken = newToken;
-      if (_authService.currentUser != null) {
-        _authService.updateDeviceToken(newToken);
-      }
-    });
   }
 
   /// Get a valid FCM token for the target user
   Future<String?> _getValidFCMToken(UserModel targetUser, String targetUserId) async {
     // Check if target user has a valid stored FCM token
-    // FCM tokens should be 140+ characters long
     if (targetUser.fcmToken != null &&
         targetUser.fcmToken!.isNotEmpty &&
         !targetUser.fcmToken!.startsWith('placeholder_token_') &&
-        targetUser.fcmToken!.length > 100) { // Valid FCM tokens are much longer than 100 chars
+        targetUser.fcmToken!.length > 100) {
       print('Using stored FCM token for user $targetUserId: ${targetUser.fcmToken!.length} chars');
       return targetUser.fcmToken;
     }
@@ -409,15 +467,12 @@ class FirebaseService extends GetxService {
       return deviceToken;
     }
 
-    // For other users, we can't get their FCM token directly
-    // In a real app, this would be handled server-side with proper token exchange
     print('Cannot get FCM token for user $targetUserId - not current user and no valid stored token');
     print('Note: User needs to scan your QR code for bidirectional notifications');
     return null;
   }
 
   /// Send notification to a specific user by their user ID
-  /// This method looks up the user's FCM token and sends the notification
   Future<bool> sendNotificationToUser({
     required String targetUserId,
     required String messageContent,
@@ -469,14 +524,13 @@ class FirebaseService extends GetxService {
         senderId: currentUser.id!,
         receiverId: targetUserId,
         messageId: messageId,
-        senderToken: deviceToken, // Include sender's FCM token
+        senderToken: deviceToken,
       );
     } catch (e) {
       print('Error sending notification to user: $e');
       return false;
     }
   }
-  
 
   /// Send notification to multiple users
   Future<List<bool>> sendNotificationToMultipleUsers({
@@ -497,8 +551,6 @@ class FirebaseService extends GetxService {
 
     return results;
   }
-
-
 
   /// Send notification to all users in a group/topic
   Future<bool> sendNotificationToTopic({
@@ -548,6 +600,10 @@ class FirebaseService extends GetxService {
               'aps': {
                 'sound': 'default',
                 'content-available': 1,
+                'alert': {
+                  'title': currentUser.displayName,
+                  'body': messageContent,
+                },
               },
             },
           },
@@ -574,6 +630,43 @@ class FirebaseService extends GetxService {
       }
     } catch (e) {
       print('Error sending topic notification: $e');
+      return false;
+    }
+  }
+
+  /// Check if FCM is properly configured and working
+  Future<bool> checkFCMStatus() async {
+    try {
+      final token = await getDeviceToken();
+      final hasPermission = await _checkNotificationPermission();
+      
+      print('FCM Status Check:');
+      print('  Platform: ${Platform.isIOS ? 'iOS' : 'Android'}');
+      print('  Token available: ${token != null}');
+      print('  Token length: ${token?.length ?? 0}');
+      print('  Permission granted: $hasPermission');
+      
+      if (Platform.isIOS) {
+        print('  iOS specific checks:');
+        print('    - Ensure APNs key/certificate is configured in Firebase Console');
+        print('    - Verify Push Notifications capability is enabled in Xcode');
+        print('    - Check app notification permissions in iOS Settings');
+      }
+      
+      return token != null && hasPermission;
+    } catch (e) {
+      print('Error checking FCM status: $e');
+      return false;
+    }
+  }
+
+  Future<bool> _checkNotificationPermission() async {
+    try {
+      final settings = await _messaging.getNotificationSettings();
+      return settings.authorizationStatus == AuthorizationStatus.authorized ||
+             settings.authorizationStatus == AuthorizationStatus.provisional;
+    } catch (e) {
+      print('Error checking notification permission: $e');
       return false;
     }
   }

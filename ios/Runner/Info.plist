@@ -63,7 +63,13 @@
 	<!-- Microphone permission (if needed for future features) -->
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app may need microphone access for voice messages.</string>
-
+	<key>FirebaseMessagingAutoInitEnabled</key>
+    <true/>
+	<key>UIBackgroundModes</key>
+<array>
+    <string>fetch</string>
+    <string>remote-notification</string>
+</array>
 	<!-- Push notification support -->
 	<key>UIBackgroundModes</key>
 	<array>

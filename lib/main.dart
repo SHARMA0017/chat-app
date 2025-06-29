@@ -16,12 +16,13 @@ import 'app/services/apns_service.dart';
 import 'app/services/unified_messaging_service.dart';
 import 'app/utils/app_theme.dart';
 import 'app/bindings/initial_binding.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize core services
   await initServices();

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project/app/services/firebase_service.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'qr_generator_controller.dart';
 
@@ -9,7 +8,6 @@ class QrGeneratorView extends GetView<QrGeneratorController> {
 
   @override
   Widget build(BuildContext context) {
-    print(FirebaseService().deviceToken);
     return Scaffold(
       appBar: AppBar(
         title: Text('qr_generator'.tr),

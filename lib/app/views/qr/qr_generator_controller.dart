@@ -15,9 +15,14 @@ class QrGeneratorController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _authService = Get.find<AuthService>();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+      _authService = Get.find<AuthService>();
     _firebaseService = Get.find<FirebaseService>();
     _generateQRData();
+      }
+    );
+
   }
   
   Future<void> _generateQRData() async {

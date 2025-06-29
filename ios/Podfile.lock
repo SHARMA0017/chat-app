@@ -1,13 +1,15 @@
 PODS:
+  - device_info_plus (0.0.1):
+    - Flutter
   - Firebase/CoreOnly (10.12.0):
     - FirebaseCore (= 10.12.0)
   - Firebase/Messaging (10.12.0):
     - Firebase/CoreOnly
     - FirebaseMessaging (~> 10.12.0)
-  - firebase_core (2.32.0):
+  - firebase_core (3.14.0):
     - Firebase/CoreOnly (= 10.12.0)
     - Flutter
-  - firebase_messaging (14.7.10):
+  - firebase_messaging (15.2.7):
     - Firebase/Messaging (= 10.12.0)
     - firebase_core
     - Flutter
@@ -33,6 +35,8 @@ PODS:
     - nanopb (< 2.30910.0, >= 2.30908.0)
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
+    - Flutter
+  - flutter_secure_storage (6.0.0):
     - Flutter
   - geocoding_ios (1.0.5):
     - Flutter
@@ -134,10 +138,12 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
@@ -172,6 +178,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
   firebase_messaging:
@@ -180,6 +188,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_local_notifications:
     :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
   geocoding_ios:
     :path: ".symlinks/plugins/geocoding_ios/ios"
   geolocator_apple:
@@ -202,15 +212,17 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite/darwin"
 
 SPEC CHECKSUMS:
+  device_info_plus: 71ffc6ab7634ade6267c7a93088ed7e4f74e5896
   Firebase: 07150e75d142fb9399f6777fa56a187b17f833a0
-  firebase_core: f59f63ca46fd62d15dab30ae1f17487962ce51aa
-  firebase_messaging: 433977b2f70bbc837ac70ced2f8611fceacac0cf
+  firebase_core: 42db1121b19ffa4646caefd9624be6e9d33b1be2
+  firebase_messaging: 1df5e27f25f326e5c5a9fb1f3874ecbfc47fef9d
   FirebaseCore: f86a1394906b97ac445ae49c92552a9425831bed
   FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
   FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
   FirebaseMessaging: bb2c4f6422a753038fe137d90ae7c1af57251316
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_local_notifications: a5a732f069baa862e728d839dd2ebb904737effb
+  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
   geocoding_ios: 86f1c479822f07a2f79f7094f2b753d1e9e20215
   geolocator_apple: 1560c3c875af2a412242c7a923e15d0d401966ff
   Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
@@ -236,6 +248,6 @@ SPEC CHECKSUMS:
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sqflite: c35dad70033b8862124f8337cc994a809fcd9fa3
 
-PODFILE CHECKSUM: f973ef1a8913973aa2b1ac0bbfd8da54bdb9601f
+PODFILE CHECKSUM: 6b53fc44d5137ec014b2e47d00c7e595b2333966
 
 COCOAPODS: 1.16.2
