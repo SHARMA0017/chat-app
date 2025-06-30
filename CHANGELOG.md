@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/SHARMA0017/chat-app/compare/v1.1.0...v1.2.0) (2025-06-30)
+
+
+### Features
+
+* test release upload ([71027ab](https://github.com/SHARMA0017/chat-app/commit/71027aba86ac51c2f9a80d9cc1e9955734cbc85b))
+
 ## [1.1.0](https://github.com/SHARMA0017/chat-app/compare/v1.0.0...v1.1.0) (2025-06-30)
 
 
