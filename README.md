@@ -119,9 +119,10 @@ Download the latest release APK and try the app immediately:
 
 ### **💬 Messaging & QR Connection**
 | QR Code Scanner | Chat Interface |
-|:---:|:---:|:---:|
+|:---:|:---:|
 | <img src="screenshots/8.png" width="250" alt="QR Scanner"/> | <img src="screenshots/5.png" width="250" alt="Chat Interface"/> | 
 | Camera-based QR scanning | Real-time messaging |
+
 
 ### **🗺️ Maps & Location**
 | Maps Integration |
