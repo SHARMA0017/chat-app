@@ -1,0 +1,10 @@
+{
+  "simple": {
+    "release-type": "simple",
+    "packages": {
+      ".": {
+        "version-file": "pubspec.yaml"
+      }
+    }
+  }
+}
