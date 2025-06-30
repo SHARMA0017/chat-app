@@ -35,6 +35,8 @@ jobs:
         run: |
           cd build/ios/iphoneos
           zip -r Runner.zip Runner.app
+      - name: ⏱ Wait for GitHub Release to be created
+        run: sleep 10
 
       - name: 🚀 Publish Release with Artifacts
         uses: softprops/action-gh-release@v2
