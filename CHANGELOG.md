@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0](https://github.com/SHARMA0017/chat-app/compare/v1.3.0...v1.4.0) (2025-06-30)
+
+
+### Features
+
+* merge workflow ([cc01148](https://github.com/SHARMA0017/chat-app/commit/cc011486b6579f5cabf9947e7751ccd1d9cabea3))
+
 ## [1.3.0](https://github.com/SHARMA0017/chat-app/compare/v1.2.0...v1.3.0) (2025-06-30)
 
 
