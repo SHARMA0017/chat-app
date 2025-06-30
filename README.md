@@ -7,7 +7,7 @@ A production-ready Flutter chat application with real-time messaging, QR code us
 ## 🎯 Quick Preview
 
 <div align="center">
-<img src="screenshots/Screenshot 2025-06-28 at 9.47.15 PM.png" width="200" alt="Home Screen"/> <img src="screenshots/Screenshot 2025-06-28 at 9.48.30 PM.png" width="200" alt="Chat Interface"/> <img src="screenshots/Screenshot 2025-06-28 at 9.48.15 PM.png" width="200" alt="QR Scanner"/> <img src="screenshots/Screenshot 2025-06-28 at 10.00.41 PM.png" width="200" alt="Maps View"/>
+<img src="screenshots/2.png" width="200" alt="Home Screen"/> <img src="screenshots/5.png" width="200" alt="Chat Interface"/> <img src="screenshots/8.png" width="200" alt="QR Scanner"/> <img src="screenshots/6.png" width="200" alt="Maps View"/>
 
 **[📥 Download APK](apk/app-release.apk)** | **[📸 View All Screenshots](#-screenshots)** | **[📚 Documentation](#-documentation)**
 </div>
@@ -114,19 +114,19 @@ Download the latest release APK and try the app immediately:
 ### **🏠 Authentication & Home**
 | Login Screen | Registration | Home Dashboard |
 |:---:|:---:|:---:|
-| <img src="screenshots/Screenshot 2025-06-28 at 9.46.59 PM.png" width="250" alt="Login Screen"/> | <img src="screenshots/Screenshot 2025-06-28 at 9.47.03 PM.png" width="250" alt="Registration Screen"/> | <img src="screenshots/Screenshot 2025-06-28 at 9.47.15 PM.png" width="250" alt="Home Screen"/> |
+| <img src="screenshots/9.png" width="250" alt="Login Screen"/> | <img src="screenshots/10.png" width="250" alt="Registration Screen"/> | <img src="screenshots/5.png" width="250" alt="Home Screen"/> |
 | Secure email/password login | User registration with validation | Clean dashboard interface |
 
 ### **💬 Messaging & QR Connection**
-| QR Code Scanner | Chat Interface | Message History |
+| QR Code Scanner | Chat Interface |
 |:---:|:---:|:---:|
-| <img src="screenshots/Screenshot 2025-06-28 at 9.48.15 PM.png" width="250" alt="QR Scanner"/> | <img src="screenshots/Screenshot 2025-06-28 at 9.48.30 PM.png" width="250" alt="Chat Interface"/> | <img src="screenshots/Screenshot 2025-06-28 at 9.54.44 PM.png" width="250" alt="Messages"/> |
-| Camera-based QR scanning | Real-time messaging | Persistent message storage |
+| <img src="screenshots/8.png" width="250" alt="QR Scanner"/> | <img src="screenshots/5.png" width="250" alt="Chat Interface"/> | 
+| Camera-based QR scanning | Real-time messaging |
 
 ### **🗺️ Maps & Location**
 | Maps Integration |
 |:---:|
-| <img src="screenshots/Screenshot 2025-06-28 at 10.00.41 PM.png" width="250" alt="Maps View"/> |
+| <img src="screenshots/6.png" width="250" alt="Maps View"/> |
 | Google Maps with location tracking |
 
 ### **✨ Key Features Demonstrated**
