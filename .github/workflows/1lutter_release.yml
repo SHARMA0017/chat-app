@@ -1,0 +1,49 @@
+name: 🛠️ Flutter Build & Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.5'
+          channel: 'stable'
+
+      - name: 📦 Install dependencies
+        run: flutter pub get
+
+      - name: 🧪 Analyze code
+        run: flutter analyze
+
+      - name: 🛠️ Build APK
+        run: flutter build apk --release
+
+      - name: 🛠️ Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+
+      - name: 📁 Zip iOS Runner.app
+        run: |
+          cd build/ios/iphoneos
+          zip -r Runner.zip Runner.app
+
+      - name: 🚀 Publish Release with Artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body_path: CHANGELOG.md
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/ios/iphoneos/Runner.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,25 @@
+name: 🚀 Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: flutter
+          package-name: "project"
+          changelog-types: |
+            [
+              {"type":"feat","section":"✨ Features"},
+              {"type":"fix","section":"🐛 Bug Fixes"},
+              {"type":"perf","section":"⚡ Performance"},
+              {"type":"refactor","section":"🧹 Refactoring"},
+              {"type":"docs","section":"📝 Documentation"},
+              {"type":"chore","section":"🔧 Maintenance"},
+              {"type":"test","section":"✅ Testing"}
+            ]
